@@ -118,7 +118,6 @@ class City extends Component {
   render() {
     const { el, onSearchClick, text, span } = this.props;
     const { temp, desc, icon } = this.state;
-    console.log(temp);
 
     return (
       <C
@@ -137,7 +136,7 @@ class City extends Component {
           <div>
             <p className="temp">
               {temp || desc ? (
-                `${temp}°C`
+                `${Math.round(temp)}°C`
               ) : (
                 <BeatLoader color="#8f8f8f" size={7} />
               )}

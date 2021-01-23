@@ -1,22 +1,9 @@
 import axios from "axios";
 import React, { Component } from "react";
+import cities from "./assets/cities";
 import Days from "./components/Days";
 import Input from "./components/input";
 import Prediction from "./components/prediction";
-
-const cities = [
-  { city: "mumbai", country: "in", displayName: "Mumbai, Maharashtra" },
-  { city: "delhi", country: "in", displayName: "Delhi, New Delhi" },
-  { city: "dehradun", country: "in", displayName: "Dehradun, Uttrakhand" },
-  { city: "ahmedabad", country: "in", displayName: "Ahmedabad, Gujarat" },
-  { city: "indore", country: "in", displayName: "Indore, MP" },
-  { city: "amritsar", country: "in", displayName: "Amritsar, Punjab" },
-  { city: "lahore", country: "pk", displayName: "Lahore, Pakistan" },
-  { city: "karachi", country: "pk", displayName: "Karachi, Pakistan" },
-  { city: "kabul", country: "af", displayName: "Kabul, Afghanistan" },
-  { city: "tehran", country: "ir", displayName: "Tehran, Iran" },
-  { city: "istanbul", country: "tr", displayName: "Istanbul, Turkey" },
-];
 
 class App extends Component {
   state = {
@@ -48,6 +35,7 @@ class App extends Component {
     return dayName;
   };
 
+  // to change current day
   changeCurrent = (current) => {
     this.setState({ current });
   };
@@ -59,8 +47,9 @@ class App extends Component {
     else return `${h % 12} PM`;
   };
 
+  // assign particular day the 48 hours (today, tomorrow, next days)
   setHours = (data) => {
-    const { current, hourly, lat, lon } = data;
+    const { hourly } = data;
     let today = { dt: [], temp: [] },
       tomorrow = { dt: [], temp: [] },
       next = { dt: [], temp: [] };
@@ -81,27 +70,12 @@ class App extends Component {
       }
     }
 
-    // if (today.length < 24) {
-    //   let len = today.length;
-    //   while (len < 24) {
-    //     today.unshift(25.0);
-    //     len += 1;
-    //   }
-    // }
-
-    // if (next.length < 24) {
-    //   let len = next.length;
-    //   while (len < 24) {
-    //     next.push(25.0);
-    //     len += 1;
-    //   }
-    // }
-
     this.setState({ days: { today, tomorrow, next } });
   };
 
+  // set the data for each days
   setDays = (data) => {
-    const { current, daily, lat, lon } = data;
+    const { daily } = data;
 
     const dayWise = [];
 
@@ -139,6 +113,7 @@ class App extends Component {
     });
   };
 
+  // get weather based on current lat and lnf
   componentDidMount() {
     const setPosition = (position) => {
       const { latitude, longitude } = position.coords;
@@ -148,7 +123,7 @@ class App extends Component {
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&units=metric&appid=2931c7a76e100f0f4f9ca58f62c24737`
         );
         const { data } = response;
-        const { name, main, sys, weather, clouds } = data;
+        const { name, main, sys, weather } = data;
         this.setState(
           {
             search: name,
@@ -186,6 +161,7 @@ class App extends Component {
     this.setState({ search });
   };
 
+  // get weather  based on searched city
   onSearchClick = (el) => {
     console.log(el.city);
     this.setState({ search: el.displayName }, async () => {
@@ -194,7 +170,7 @@ class App extends Component {
       );
       const { data } = response;
       console.log(data);
-      const { name, main, sys, weather, coord } = data;
+      const { main, sys, weather, coord } = data;
       const { lat, lon } = coord;
       this.setState(
         {
@@ -240,15 +216,12 @@ class App extends Component {
       sun,
     } = this.state;
     const mainIcon = this.state.data.weather.icon;
-    // console.log(weather);
+
     let data = [];
     if (current === 0) data = days.today;
     else if (current === 1) data = days.tomorrow;
     else data = days.next;
-    // console.log(data);
-
-    const label = data.dt.slice(0, 16);
-    // console.log(label);
+    const label = data.dt.slice(0, 24);
 
     return (
       <div className="App">

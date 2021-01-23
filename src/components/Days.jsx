@@ -29,7 +29,6 @@ const Day = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* width: 100%; */
   text-align: center;
   padding: 20px;
   border: 3px solid transparent;

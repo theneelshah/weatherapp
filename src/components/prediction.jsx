@@ -12,16 +12,6 @@ const Card = styled.div`
   border-radius: 10px;
   box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2);
 
-  #chart {
-    height: 400px !important;
-    width: 100% !important;
-    /* font-size: 100%; */
-  }
-
-  #sun {
-    /* height: 200px !important; */
-  }
-
   .time {
     display: flex;
     justify-content: space-between;
@@ -75,8 +65,6 @@ const Current = styled.div`
     }
   }
   @media only screen and (max-width: 720px) {
-    /* justify-content: left; */
-
     .temp {
       font-size: 30px;
     }
@@ -94,7 +82,6 @@ const Other = styled.div`
   justify-content: space-between;
   margin: 20px 0;
   .single {
-    /* width: 40%; */
     background: #e3e3e3;
     border-radius: 5px;
     padding: 3% 20% 3% 3%;
@@ -111,7 +98,6 @@ const Other = styled.div`
     }
   }
   @media only screen and (max-width: 720px) {
-    /* flex-direction: column; */
     .single {
       p:nth-of-type(1) {
         font-size: 15px;
@@ -135,7 +121,6 @@ export default class Prediction extends Component {
   };
 
   componentDidMount() {
-    const { data, label } = this.props;
     window.addEventListener("resize", (e) => {
       this.setState({ windowWidth: window.innerWidth });
     });
@@ -152,8 +137,9 @@ export default class Prediction extends Component {
       sun,
     } = this.props;
     const { data, label } = this.props;
-    let sunRiseTime, sunSetTime, sunrise, sunset;
 
+    // setting values
+    let sunRiseTime, sunSetTime, sunrise, sunset;
     if (sun.length > 0) {
       sunrise = sun[current].sunrise;
       sunset = sun[current].sunset;
@@ -163,208 +149,170 @@ export default class Prediction extends Component {
     const labels = ["6AM", `${sunRiseTime}`, "1PM", `${sunSetTime}`, "8PM"];
     const dataSun = [-2, 0, 10, 0, -2];
 
+    // making graphs responsive for mobile
     const { windowWidth } = this.state;
-    const height = windowWidth < 1200 ? (windowWidth < 720 ? 250 : 200) : 125;
+    const height = windowWidth < 1200 ? (windowWidth < 720 ? 225 : 200) : 125;
     const fontSize = windowWidth < 720 ? 10 : 15;
     const padding = windowWidth < 720 ? 1 : 30;
     const sunHeight = windowWidth < 720 ? 140 : 70;
 
-    // const tempChart = new Chart(document.getElementById("canvas"), {});
-    // tempChart.height = height;
-    // console.log(tempChart.height);
-    // tempChart.update();
-
     return (
-      <div>
-        <Card>
-          <Current>
-            <div className="temp">
-              {temp[current] ? (
-                `${Math.round(temp[current])}°C`
-              ) : (
-                <BeatLoader color="#8f8f8f" />
-              )}
-            </div>
-            <div className="icon">
-              {mainIcon && current === 0 ? (
-                <img
-                  src={`https://openweathermap.org/img/wn/${mainIcon}@2x.png`}
-                  alt=""
-                />
-              ) : (
-                <img
-                  src={`https://openweathermap.org/img/wn/${icon[current]}@2x.png`}
-                  alt=""
-                />
-              )}
-            </div>
-          </Current>
+      <Card>
+        <Current>
+          <div className="temp">
+            {temp[current] ? (
+              `${Math.round(temp[current])}°C`
+            ) : (
+              <BeatLoader color="#8f8f8f" />
+            )}
+          </div>
 
-          <Line
-            height={height}
-            width={400}
-            id="canvas"
-            plugins={[ChartDataLabels]}
-            data={{
-              labels: label,
-              datasets: [
+          <div className="icon">
+            {mainIcon && current === 0 ? (
+              <img
+                src={`https://openweathermap.org/img/wn/${mainIcon}@2x.png`}
+                alt="weather-icon"
+              />
+            ) : (
+              <img
+                src={`https://openweathermap.org/img/wn/${icon[current]}@2x.png`}
+                alt="weather-icon"
+              />
+            )}
+          </div>
+        </Current>
+
+        <Line
+          height={height}
+          width={400}
+          id="canvas"
+          plugins={[ChartDataLabels]}
+          data={{
+            labels: label,
+            datasets: [
+              {
+                label: "",
+                data: data.temp,
+                backgroundColor: "rgba(0, 140, 255, 0.2)",
+                borderWidth: 2,
+                borderColor: "#2196f3",
+                borderCapStyle: "round",
+                pointBackgroundColor: "white",
+                pointHitRadius: 2,
+              },
+            ],
+          }}
+          options={{
+            scales: {
+              xAxes: [
                 {
-                  label: "Temperature",
-                  data: data.temp,
-                  backgroundColor: "rgba(0, 140, 255, 0.2)",
-                  borderWidth: 2,
-                  borderColor: "#2196f3",
-                  borderCapStyle: "round",
-                  pointBackgroundColor: "white",
-                  pointHitRadius: 2,
+                  gridLines: {
+                    color: "#e3e3e3",
+                  },
+                  ticks: {
+                    fontSize: fontSize,
+                    padding: padding,
+                  },
                 },
               ],
-            }}
-            options={{
-              // maintainAspectRatio: false,
-              scales: {
-                xAxes: [
-                  {
-                    gridLines: {
-                      color: "#e3e3e3",
-                    },
-                    ticks: {
-                      fontSize: fontSize,
-                      padding: padding,
-                    },
-                  },
-                ],
-                yAxes: [
-                  {
+              yAxes: [
+                {
+                  display: false,
+                  gridLines: {
                     display: false,
-                    gridLines: {
-                      display: false,
-                      color: "#ffffff",
-                    },
+                    color: "#ffffff",
                   },
-                ],
-              },
-              plugins: {
-                datalabels: {
-                  backgroundColor: "#2196f3",
-                  borderColor: "#2196f3",
-                  borderRadius: 100,
-                  borderWidth: 3,
-                  color: "white",
-                  font: {
-                    size: fontSize + 2,
-                    weight: "bold",
-                  },
-                  padding: 0,
-                  anchor: "end",
-                  textAlign: "center",
                 },
+              ],
+            },
+            plugins: {
+              datalabels: {
+                backgroundColor: "#2196f3",
+                borderColor: "#2196f3",
+                borderRadius: 100,
+                borderWidth: 3,
+                color: "white",
+                font: {
+                  size: fontSize + 2,
+                  weight: "bold",
+                },
+                padding: 0,
+                anchor: "end",
+                textAlign: "center",
               },
-            }}
-          />
+            },
+          }}
+        />
 
-          <Other>
-            <div className="single">
-              <p>Pressure</p>
-              <p>{pressure[current]} hpa</p>
-            </div>
-            <div className="single">
-              <p>Humidity</p>
-              <p>{humidity[current]}%</p>
-            </div>
-          </Other>
+        <Other>
+          <div className="single">
+            <p>Pressure</p>
+            <p>{pressure[current]} hpa</p>
+          </div>
+          <div className="single">
+            <p>Humidity</p>
+            <p>{humidity[current]}%</p>
+          </div>
+        </Other>
 
-          {sun && (
-            <div>
-              <div className="time">
-                <div>
-                  <p>Sunrise</p>
-                  <p>
-                    {sunRiseTime || <BeatLoader color="#8f8f8f" size={10} />}
-                  </p>
-                </div>
-
-                <div>
-                  <p>Sunset</p>
-                  <p>
-                    {sunSetTime || <BeatLoader color="#8f8f8f" size={10} />}
-                  </p>
-                </div>
+        {sun && (
+          <div>
+            <div className="time">
+              <div>
+                <p>Sunrise</p>
+                <p>{sunRiseTime || <BeatLoader color="#8f8f8f" size={10} />}</p>
               </div>
 
-              <Line
-                plugins={[]}
-                height={sunHeight}
-                data={{
-                  labels: labels,
-                  datasets: [
+              <div>
+                <p>Sunset</p>
+                <p>{sunSetTime || <BeatLoader color="#8f8f8f" size={10} />}</p>
+              </div>
+            </div>
+
+            <Line
+              plugins={[]}
+              height={sunHeight}
+              data={{
+                labels: labels,
+                datasets: [
+                  {
+                    label: "",
+                    data: dataSun,
+                    backgroundColor: "rgba(255, 243, 37, 0.2)",
+                    // fill: false,
+                    borderColor: "yellow",
+                    borderWidth: 2,
+                  },
+                ],
+              }}
+              options={{
+                tooltips: { enabled: false },
+                hover: { mode: null },
+                scales: {
+                  xAxes: [
                     {
-                      label: "",
-                      data: dataSun,
-                      backgroundColor: "rgba(255, 243, 37, 0.2)",
-                      // fill: false,
-                      borderColor: "yellow",
-                      borderWidth: 2,
+                      gridLines: {
+                        display: false,
+                        color: "#ffffff",
+                      },
                     },
                   ],
-                }}
-                options={{
-                  tooltips: { enabled: false },
-                  hover: { mode: null },
+                  yAxes: [
+                    {
+                      display: false,
 
-                  scales: {
-                    xAxes: [
-                      {
-                        gridLines: {
-                          display: false,
-                          color: "#ffffff",
-                        },
-                      },
-                    ],
-                    yAxes: [
-                      {
+                      gridLines: {
                         display: false,
-
-                        gridLines: {
-                          display: false,
-                          color: "#ffffff",
-                        },
+                        color: "#ffffff",
                       },
-                    ],
-                  },
-                }}
-              />
-            </div>
-          )}
-        </Card>
-      </div>
+                    },
+                  ],
+                },
+              }}
+            />
+          </div>
+        )}
+      </Card>
     );
   }
 }
-
-// labels: [
-//   "12AM",
-//   "1AM",
-//   "2AM",
-//   "3AM",
-//   "4AM",
-//   "5AM",
-//   "6AM",
-//   "7AM",
-//   "8AM",
-//   "9AM",
-//   "10AM",
-//   "11AM",
-//   "12PM",
-//   "1PM",
-//   "2PM",
-//   "3PM",
-//   "4PM",
-//   "5PM",
-//   "6PM",
-//   "7PM",
-//   "8PM",
-//   "9PM",
-//   "10PM",
-//   "11PM",
-// ],

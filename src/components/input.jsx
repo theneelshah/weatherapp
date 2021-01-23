@@ -57,18 +57,18 @@ class Inp extends Component {
 
   render() {
     const { search, onSearchChange, cities, onSearchClick } = this.props;
-    const { focus } = this.state;
+
     return (
       <div style={{ position: "relative" }}>
         <Input onClick={this.focusSearchBox}>
-          <img src={Pin} alt="" srcset="" />
+          <img src={Pin} alt="" />
           <I
             type="text"
             value={search}
             ref={(search) => (this.searchBox = search)}
             onChange={(e) => onSearchChange(e.target.value)}
           />
-          <img src={Search} alt="" srcset="" />
+          <img src={Search} alt="" />
         </Input>
         <Suggestions
           cities={cities}
